@@ -4,7 +4,7 @@ executors:
   node:
     resource_class: small
     docker:
-      - image: cimg/node:21.7.2
+      - image: cimg/node:21.7.3
 jobs:
   build-lint-test:
     executor: node
