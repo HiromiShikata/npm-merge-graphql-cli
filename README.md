@@ -4,7 +4,6 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
-
 Merge GraphQL Definitions
 
 This library allows you to merge multiple GraphQL schema definitions, both auto-generated and manually defined. It was created to address the need to utilize both automatically generated GraphQL types as well as custom, hand-crafted definitions within the same application.
