@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/HiromiShikata/npm-merge-graphql-cli/compare/v1.0.0...v1.0.1) (2025-04-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependency dotenv to v16.5.0 ([91a6e3e](https://github.com/HiromiShikata/npm-merge-graphql-cli/commit/91a6e3ed2710d2d41ec139abb2bcf7822d8afcec))
+
 # 1.0.0 (2025-01-04)
 
 
