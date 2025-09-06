@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/HiromiShikata/npm-merge-graphql-cli/compare/v1.0.6...v1.0.7) (2025-09-06)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([b56ede9](https://github.com/HiromiShikata/npm-merge-graphql-cli/commit/b56ede98cfdc8c4b07164da96508474fa1c5b3b5))
+
 ## [1.0.6](https://github.com/HiromiShikata/npm-merge-graphql-cli/compare/v1.0.5...v1.0.6) (2025-07-26)
 
 
