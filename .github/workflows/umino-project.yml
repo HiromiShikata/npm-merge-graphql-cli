@@ -32,7 +32,7 @@ on:
 env:
   unread: Unread
   in_progress: In Progress
-  gh_project_token: ${{ secrets.GH_TOKEN }}
+  gh_project_token: ${{ secrets.GH_TOKEN || github.token }}
   user: HiromiShikata
   project_id: 48
   project_v2_id: PVT_kwHOAGJHa84AFWnr
@@ -64,7 +64,7 @@ jobs:
           NUMBER=$(echo ${{ github.event_name }} | grep -q "pull_request" && echo ${{ github.event.pull_request.number }} || echo ${{ github.event.issue.number }})
 
           QUERY_DATA='{ "query": "query { repository(owner: \"'$OWNER'\", name: \"'$REPO'\") { '${ENTITY_TYPE}'(number: '$NUMBER') { projectItems(first: 10) { nodes { id } } } } }" }'
-          RESPONSE=$(curl -X POST -H "Authorization: bearer ${{ secrets.GH_TOKEN }}" -H "Content-Type: application/json" --data "$QUERY_DATA" https://api.github.com/graphql)
+          RESPONSE=$(curl -X POST -H "Authorization: bearer ${{ secrets.GH_TOKEN || github.token }}" -H "Content-Type: application/json" --data "$QUERY_DATA" https://api.github.com/graphql)
 
           if echo $RESPONSE | grep -q "errors"; then
             echo "Error in GraphQL query"
@@ -105,7 +105,7 @@ jobs:
         if: ${{ github.event_name == 'issue_comment' && github.event.action == 'created' && contains(github.event.comment.body, '/createissue') }}
         uses: actions/github-script@v8
         with:
-          github-token: ${{secrets.GH_TOKEN}}
+          github-token: ${{secrets.GH_TOKEN || github.token}}
           script: |
             const commentBody = context.payload.comment.body;
             const createIssueIndex = commentBody.indexOf('/createissue');
@@ -128,7 +128,7 @@ jobs:
         if: ${{ github.event_name == 'issue_comment' && github.event.action == 'created' && (contains(github.event.comment.body, '/close') || contains(github.event.comment.body, '/done')) }}
         uses: actions/github-script@v8
         with:
-          github-token: ${{secrets.GH_TOKEN}}
+          github-token: ${{secrets.GH_TOKEN || github.token}}
           script: |
             await github.rest.issues.update({
               owner: context.repo.owner,
@@ -142,7 +142,7 @@ jobs:
           DATE_STRING=$(echo "${{ github.event.comment.body }}" | grep -oP '(?<=/movenextactiondateto )\d{8}')
           OWNER=$(echo ${{ github.repository }} | cut -d '/' -f 1)
           REPO=$(echo ${{ github.repository }} | cut -d '/' -f 2)
-          ITEM_ID=$(curl -X POST -H "Authorization: bearer ${{ secrets.GH_TOKEN }}" -H "Content-Type: application/json" --data '{ "query": "query { repository(owner: \"'$OWNER'\", name: \"'$REPO'\") { issue(number: '${{ github.event.issue.number }}') { projectItems(first: 10) { nodes { id } } } } }" }' https://api.github.com/graphql | jq -r '.data.repository.issue.projectItems.nodes[0].id')
+          ITEM_ID=$(curl -X POST -H "Authorization: bearer ${{ secrets.GH_TOKEN || github.token }}" -H "Content-Type: application/json" --data '{ "query": "query { repository(owner: \"'$OWNER'\", name: \"'$REPO'\") { issue(number: '${{ github.event.issue.number }}') { projectItems(first: 10) { nodes { id } } } } }" }' https://api.github.com/graphql | jq -r '.data.repository.issue.projectItems.nodes[0].id')
           UPDATE_FIELD_DATA="{\"query\":\"mutation { updateProjectV2ItemFieldValue(input: {projectId: \\\"${{ env.project_v2_id }}\\\", fieldId: \\\"${{ env.field_id }}\\\", itemId: \\\"$ITEM_ID\\\", value: { date: \\\"$DATE_STRING\\\" }}) { clientMutationId }}\"}"
           curl --request POST \
             -f \
@@ -154,7 +154,7 @@ jobs:
         if: ${{ github.event_name == 'issue_comment' && github.event.action == 'created' && contains(github.event.comment.body, '/changeassignee ') }}
         uses: actions/github-script@v8
         with:
-          github-token: ${{secrets.GH_TOKEN}}
+          github-token: ${{secrets.GH_TOKEN || github.token}}
           script: |
             const commentBody = context.payload.comment.body;
             const assigneeIndex = commentBody.indexOf('/changeassignee ') + 16;
@@ -173,7 +173,7 @@ jobs:
         uses: pozil/auto-assign-issue@v2.2.0
         with:
           assignees: HiromiShikata
-          repo-token: ${{ secrets.GH_TOKEN }}
+          repo-token: ${{ secrets.GH_TOKEN || github.token }}
 
   check_pull_requests_to_link_issues:
     runs-on: ubuntu-latest
@@ -185,7 +185,7 @@ jobs:
         id: check-linked-issues
         with:
           exclude-branches: 'release/**, dependabot/**, project-common/**, renovate/**'
-          github-token: ${{ secrets.GH_TOKEN }}
+          github-token: ${{ secrets.GH_TOKEN || github.token }}
           loose-matching: true
       - name: Get the output
         run: echo "How many linked issues? ${{ steps.check-linked-issues.outputs.linked_issues_count }}"

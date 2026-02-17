@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: reitermarkus/automerge@v2
         with:
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.GH_TOKEN || github.token }}
           merge-method: rebase
           pull-request: ${{ github.event.inputs.pull-request }}
           dry-run: true
