@@ -4,10 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prettier": "prettier --write '**/*'",
-    "lint": "eslint src",
-    "lint-fix": "eslint src --fix",
-    "format": "npm run prettier && npm run lint-fix",
+    "format": "biome check --write .",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "jest"
   },
@@ -35,21 +32,16 @@
   },
   "homepage": "https://github.com/HiromiShikata/npm-merge-graphql-cli#readme",
   "devDependencies": {
+    "@biomejs/biome": "2.5.5",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
+    "@swc/core": "1.15.46",
+    "@swc/jest": "0.2.39",
     "@types/jest": "^30.0.0",
-    "@eslint/js": "^10.0.1",
-    "@typescript-eslint/eslint-plugin": "^8.62.0",
-    "@typescript-eslint/parser": "^8.62.0",
     "conventional-changelog-conventionalcommits": "^10.2.1",
-    "eslint": "^10.5.0",
-    "eslint-plugin-import-x": "^4.16.2",
-    "typescript-eslint": "^8.62.0",
     "jest": "^30.0.0",
     "jest-html-reporter": "^4.0.0",
     "jest-junit": "^17.0.0",
-    "prettier": "^3.0.0",
-    "ts-jest": "^29.1.0",
     "typescript": "^7.0.0"
   },
   "dependencies": {
