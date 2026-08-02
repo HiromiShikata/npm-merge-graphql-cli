@@ -2,6 +2,10 @@ name: 'Format'
 
 on: push
 
+concurrency:
+  group: format-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   format:
     runs-on: ubuntu-latest
