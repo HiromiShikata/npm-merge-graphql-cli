@@ -32,10 +32,10 @@
   },
   "homepage": "https://github.com/HiromiShikata/npm-merge-graphql-cli#readme",
   "devDependencies": {
-    "@biomejs/biome": "2.5.8",
+    "@biomejs/biome": "2.5.10",
     "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/git": "^11.0.0",
-    "@swc/core": "1.16.0",
+    "@swc/core": "1.16.1",
     "@swc/jest": "0.2.39",
     "@types/jest": "^30.0.0",
     "conventional-changelog-conventionalcommits": "^10.2.1",
