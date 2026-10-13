@@ -46,5 +46,8 @@
   },
   "dependencies": {
     "dotenv": "^18.0.5"
+  },
+  "overrides": {
+    "handlebars": "4.7.10"
   }
 }
