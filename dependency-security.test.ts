@@ -38,4 +38,43 @@ describe('dependency security', () => {
       isVersionAtLeast(handlebarsOverrideVersion as string, [4, 7, 10]),
     ).toEqual(true);
   });
+
+  it('keeps the bundled npm ip-address dependency at or above the version fixing GHSA-mwp4-54f8-5fhr (SSRF via octal octet parsing)', () => {
+    const lockFileContent = fs.readFileSync(
+      path.join(__dirname, 'package-lock.json'),
+      'utf8',
+    );
+    const parsed = JSON.parse(lockFileContent);
+    const ipAddressVersion: string =
+      parsed.packages['node_modules/npm/node_modules/ip-address'].version;
+
+    expect(isVersionAtLeast(ipAddressVersion, [10, 3, 1])).toEqual(true);
+  });
+
+  it('keeps the top-level undici dependency at or above the version fixing GHSA-w293-vg96-wgc3 (TLS certificate validation bypass in BalancedPool)', () => {
+    const lockFileContent = fs.readFileSync(
+      path.join(__dirname, 'package-lock.json'),
+      'utf8',
+    );
+    const parsed = JSON.parse(lockFileContent);
+    const undiciVersion: string =
+      parsed.packages['node_modules/undici'].version;
+
+    expect(isVersionAtLeast(undiciVersion, [7, 29, 1])).toEqual(true);
+  });
+
+  it('pins the npm override in package.json at or above the version bundling the patched ip-address and undici', () => {
+    const packageJsonContent = fs.readFileSync(
+      path.join(__dirname, 'package.json'),
+      'utf8',
+    );
+    const parsed = JSON.parse(packageJsonContent);
+    const npmOverrideVersion: string | undefined =
+      parsed.overrides && parsed.overrides.npm;
+
+    expect(typeof npmOverrideVersion).toEqual('string');
+    expect(isVersionAtLeast(npmOverrideVersion as string, [11, 21, 0])).toEqual(
+      true,
+    );
+  });
 });
