@@ -78,3 +78,73 @@ describe('dependency security', () => {
     );
   });
 });
+
+type MinimumVersionCase = {
+  packageName: string;
+  location: 'package.json devDependencies' | 'package-lock.json resolved';
+  minimum: number[];
+};
+
+const exactVersionPattern = /^\d+\.\d+\.\d+$/;
+
+const readDeclaredVersion = (testCase: MinimumVersionCase): string => {
+  const parsed = JSON.parse(
+    fs.readFileSync(
+      path.join(
+        __dirname,
+        testCase.location === 'package.json devDependencies'
+          ? 'package.json'
+          : 'package-lock.json',
+      ),
+      'utf8',
+    ),
+  );
+  return testCase.location === 'package.json devDependencies'
+    ? parsed.devDependencies[testCase.packageName]
+    : parsed.packages[`node_modules/${testCase.packageName}`].version;
+};
+
+describe('dependency refresh', () => {
+  it('declares @swc/core as an exact version in package.json and resolves every refreshed dependency at or above its target version in package-lock.json', () => {
+    const cases: MinimumVersionCase[] = [
+      {
+        packageName: '@swc/core',
+        location: 'package.json devDependencies',
+        minimum: [1, 16, 18],
+      },
+      {
+        packageName: '@swc/core',
+        location: 'package-lock.json resolved',
+        minimum: [1, 16, 18],
+      },
+      {
+        packageName: 'conventional-changelog-conventionalcommits',
+        location: 'package-lock.json resolved',
+        minimum: [10, 4, 1],
+      },
+      {
+        packageName: 'dotenv',
+        location: 'package-lock.json resolved',
+        minimum: [18, 0, 7],
+      },
+    ];
+
+    const actual = cases.map((testCase) => {
+      const version = readDeclaredVersion(testCase);
+      return {
+        packageName: testCase.packageName,
+        location: testCase.location,
+        meetsMinimum:
+          exactVersionPattern.test(version) &&
+          isVersionAtLeast(version, testCase.minimum),
+      };
+    });
+    const expected = cases.map((testCase) => ({
+      packageName: testCase.packageName,
+      location: testCase.location,
+      meetsMinimum: true,
+    }));
+
+    expect(actual).toEqual(expected);
+  });
+});
