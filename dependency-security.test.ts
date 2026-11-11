@@ -148,3 +148,46 @@ describe('dependency refresh', () => {
     expect(actual).toEqual(expected);
   });
 });
+
+describe('undici and npm security patch', () => {
+  it('resolves every undici copy in package-lock.json at or above the patched release for its major version', () => {
+    const parsed = JSON.parse(
+      fs.readFileSync(path.join(__dirname, 'package-lock.json'), 'utf8'),
+    );
+    const patchedMinimumByMajor: Record<number, number[]> = {
+      6: [6, 29, 1],
+      7: [7, 30, 1],
+    };
+    const undiciEntries = Object.keys(parsed.packages)
+      .filter((lockfilePath) => lockfilePath.endsWith('node_modules/undici'))
+      .map((lockfilePath) => {
+        const version: string = parsed.packages[lockfilePath].version;
+        const major = Number(version.split('.')[0]);
+        const minimum = patchedMinimumByMajor[major] ?? [7, 30, 1];
+        return {
+          lockfilePath,
+          version,
+          patched: isVersionAtLeast(version, minimum),
+        };
+      });
+
+    expect(undiciEntries.length).toBeGreaterThan(0);
+    expect(undiciEntries).toEqual(
+      undiciEntries.map((entry) => ({ ...entry, patched: true })),
+    );
+  });
+
+  it('pins the npm override in package.json at or above 11.21.2, the first npm release bundling the patched undici 6.29.1', () => {
+    const packageJsonContent = fs.readFileSync(
+      path.join(__dirname, 'package.json'),
+      'utf8',
+    );
+    const parsed = JSON.parse(packageJsonContent);
+    const npmOverrideVersion: string | undefined = parsed.overrides?.npm;
+
+    expect(typeof npmOverrideVersion).toEqual('string');
+    expect(isVersionAtLeast(npmOverrideVersion as string, [11, 21, 2])).toEqual(
+      true,
+    );
+  });
+});
