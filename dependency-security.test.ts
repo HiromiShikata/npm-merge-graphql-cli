@@ -147,6 +147,38 @@ describe('dependency refresh', () => {
 
     expect(actual).toEqual(expected);
   });
+
+  it('resolves every brace-expansion copy in package-lock.json at or above the patched release for its major version', () => {
+    const minimumByMajor: Record<number, number[] | undefined> = {
+      1: [1, 1, 20],
+      2: [2, 1, 6],
+      5: [5, 0, 11],
+    };
+
+    const parsed = JSON.parse(
+      fs.readFileSync(path.join(__dirname, 'package-lock.json'), 'utf8'),
+    );
+    const braceExpansionEntries = Object.keys(parsed.packages)
+      .filter((lockfilePath) =>
+        lockfilePath.endsWith('node_modules/brace-expansion'),
+      )
+      .map((lockfilePath) => {
+        const version: string = parsed.packages[lockfilePath].version;
+        const major = Number(version.split('.')[0]);
+        const minimum = minimumByMajor[major];
+        return {
+          key: lockfilePath,
+          version,
+          meetsMinimum:
+            minimum !== undefined && isVersionAtLeast(version, minimum),
+        };
+      });
+
+    expect(braceExpansionEntries.length).toBeGreaterThan(0);
+    expect(braceExpansionEntries).toEqual(
+      braceExpansionEntries.map((entry) => ({ ...entry, meetsMinimum: true })),
+    );
+  });
 });
 
 describe('undici and npm security patch', () => {
