@@ -1,6 +1,6 @@
 ---
-
-## applyTo: '**'
+applyTo: '**'
+---
 
 <!--
 DO NOT EDIT DIRECTLY.
