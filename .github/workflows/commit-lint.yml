@@ -52,7 +52,7 @@ jobs:
         id: check-linked-issues
         if: false
         with:
-          exclude-branches: 'release/**, dependabot/**, project-common/**'
+          exclude-branches: "release/**, dependabot/**, project-common/**"
           loose-matching: true
       - name: Check for bare issue-number shorthand
         if: github.head_ref != 'fleet-live' && github.head_ref != 'fleet-live-to-main'

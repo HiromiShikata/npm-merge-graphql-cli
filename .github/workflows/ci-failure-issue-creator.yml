@@ -9,7 +9,7 @@ on:
   workflow_run:
     types:
       - completed
-    workflows: ['*']
+    workflows: ["*"]
 
 jobs:
   create-or-comment-issue:

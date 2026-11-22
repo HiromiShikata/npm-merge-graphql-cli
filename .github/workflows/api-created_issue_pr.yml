@@ -9,9 +9,9 @@ on:
   workflow_dispatch:
     inputs:
       issue_or_pr_url:
-        description: 'Issue or PR URL (https://github.com/<owner>/<repo>/issues/<number> or .../pull/<number>)'
+        description: "Issue or PR URL (https://github.com/<owner>/<repo>/issues/<number> or .../pull/<number>)"
         required: true
-        default: ''
+        default: ""
 
 permissions: {}
 
