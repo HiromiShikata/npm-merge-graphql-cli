@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const isVersionAtLeast = (version: string, minimum: number[]): boolean => {
   const actual = version.split('.').map(Number);
@@ -31,7 +31,7 @@ describe('dependency security', () => {
     );
     const parsed = JSON.parse(packageJsonContent);
     const handlebarsOverrideVersion: string | undefined =
-      parsed.overrides && parsed.overrides.handlebars;
+      parsed.overrides?.handlebars;
 
     expect(typeof handlebarsOverrideVersion).toEqual('string');
     expect(
@@ -69,8 +69,7 @@ describe('dependency security', () => {
       'utf8',
     );
     const parsed = JSON.parse(packageJsonContent);
-    const npmOverrideVersion: string | undefined =
-      parsed.overrides && parsed.overrides.npm;
+    const npmOverrideVersion: string | undefined = parsed.overrides?.npm;
 
     expect(typeof npmOverrideVersion).toEqual('string');
     expect(isVersionAtLeast(npmOverrideVersion as string, [11, 21, 0])).toEqual(
