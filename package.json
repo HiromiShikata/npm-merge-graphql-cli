@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/HiromiShikata/npm-merge-graphql-cli#readme",
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.8",
     "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/git": "^11.0.1",
     "@swc/core": "1.16.22",
@@ -46,7 +46,7 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "dotenv": "^18.0.9"
+    "dotenv": "^18.0.10"
   },
   "overrides": {
     "handlebars": "4.7.10",
