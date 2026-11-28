@@ -50,6 +50,10 @@
   },
   "overrides": {
     "handlebars": "4.7.10",
-    "npm": "11.21.2"
+    "npm": "11.21.2",
+    "glob": "^14.0.2",
+    "test-exclude": {
+      "minimatch": "^11.0.1"
+    }
   }
 }
