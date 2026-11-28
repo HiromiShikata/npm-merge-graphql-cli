@@ -11,6 +11,27 @@ const isVersionAtLeast = (version: string, minimum: number[]): boolean => {
   );
 };
 
+const compareVersions = (left: string, right: number[]): number => {
+  const actual = left.split('.').map(Number);
+  for (let index = 0; index < 3; index += 1) {
+    if (actual[index] !== right[index]) {
+      return actual[index] > right[index] ? 1 : -1;
+    }
+  }
+  return 0;
+};
+
+const isVersionAtMost = (version: string, maximum: number[]): boolean =>
+  compareVersions(version, maximum) <= 0;
+
+const isVersionInRange = (
+  version: string,
+  minimum: number[],
+  maximumExclusive: number[],
+): boolean =>
+  isVersionAtLeast(version, minimum) &&
+  compareVersions(version, maximumExclusive) < 0;
+
 describe('dependency security', () => {
   it('keeps the transitive handlebars dependency at or above the version fixing GHSA-8r5x-fm3f-whwj / GHSA-xw65-4hp5-5hc7 (JavaScript injection vulnerabilities)', () => {
     const lockFileContent = fs.readFileSync(
@@ -220,5 +241,57 @@ describe('undici and npm security patch', () => {
     expect(isVersionAtLeast(npmOverrideVersion as string, [11, 21, 2])).toEqual(
       true,
     );
+  });
+});
+
+describe('minimatch and glob advisories', () => {
+  it('contains no vulnerable non-npm minimatch copies', () => {
+    const parsed = JSON.parse(
+      fs.readFileSync(path.join(__dirname, 'package-lock.json'), 'utf8'),
+    );
+    const vulnerableEntries = Object.keys(parsed.packages)
+      .filter(
+        (lockfilePath) =>
+          lockfilePath.endsWith('node_modules/minimatch') &&
+          !lockfilePath.startsWith('node_modules/npm/'),
+      )
+      .filter((lockfilePath) =>
+        isVersionInRange(
+          parsed.packages[lockfilePath].version,
+          [7, 0, 0],
+          [11, 0, 1],
+        ),
+      )
+      .map((lockfilePath) => ({
+        key: lockfilePath,
+        version: parsed.packages[lockfilePath].version,
+      }));
+
+    expect(vulnerableEntries).toEqual([]);
+  });
+
+  it('contains no vulnerable non-npm glob copies', () => {
+    const parsed = JSON.parse(
+      fs.readFileSync(path.join(__dirname, 'package-lock.json'), 'utf8'),
+    );
+    const vulnerableEntries = Object.keys(parsed.packages)
+      .filter(
+        (lockfilePath) =>
+          lockfilePath.endsWith('node_modules/glob') &&
+          !lockfilePath.startsWith('node_modules/npm/'),
+      )
+      .filter((lockfilePath) => {
+        const version = parsed.packages[lockfilePath].version;
+        return (
+          isVersionAtLeast(version, [9, 0, 0]) &&
+          isVersionAtMost(version, [14, 0, 1])
+        );
+      })
+      .map((lockfilePath) => ({
+        key: lockfilePath,
+        version: parsed.packages[lockfilePath].version,
+      }));
+
+    expect(vulnerableEntries).toEqual([]);
   });
 });
